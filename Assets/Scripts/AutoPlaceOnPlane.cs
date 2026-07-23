@@ -19,15 +19,29 @@ public class AutoPlaceOnPlane : MonoBehaviour
     void OnEnable()
     {
         planeManager.planesChanged += OnPlanesChanged;
+        ARSession.stateChanged += OnSessionStateChanged;
+        Debug.Log($"[ARDEBUG] OnEnable. subsystem={planeManager.subsystem}, running={planeManager.subsystem?.running}, descriptorSupportsHorizontal={planeManager.descriptor?.supportsHorizontalPlaneDetection}, sessionState={ARSession.state}");
     }
 
     void OnDisable()
     {
         planeManager.planesChanged -= OnPlanesChanged;
+        ARSession.stateChanged -= OnSessionStateChanged;
+    }
+
+    void OnSessionStateChanged(ARSessionStateChangedEventArgs args)
+    {
+        Debug.Log($"[ARDEBUG] Session state changed: {args.state}");
     }
 
     void OnPlanesChanged(ARPlanesChangedEventArgs args)
     {
+        Debug.Log($"[ARDEBUG] OnPlanesChanged added={args.added.Count} updated={args.updated.Count} removed={args.removed.Count}");
+        foreach (var plane in args.added)
+        {
+            Debug.Log($"[ARDEBUG] Added plane id={plane.trackableId} alignment={plane.alignment} center={plane.center}");
+        }
+
         if (placed || modelPrefab == null)
         {
             return;

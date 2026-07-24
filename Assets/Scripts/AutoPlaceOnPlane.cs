@@ -9,6 +9,7 @@ public class AutoPlaceOnPlane : MonoBehaviour
     [SerializeField] bool hidePlanesAfterPlacement = true;
 
     ARPlaneManager planeManager;
+    GameObject placedInstance;
     bool placed;
 
     void Awake()
@@ -42,7 +43,19 @@ public class AutoPlaceOnPlane : MonoBehaviour
             Debug.Log($"[ARDEBUG] Added plane id={plane.trackableId} alignment={plane.alignment} center={plane.center}");
         }
 
-        if (placed || modelPrefab == null)
+        if (placed)
+        {
+            if (hidePlanesAfterPlacement)
+            {
+                foreach (var plane in args.added)
+                {
+                    plane.gameObject.SetActive(false);
+                }
+            }
+            return;
+        }
+
+        if (modelPrefab == null)
         {
             return;
         }
@@ -62,7 +75,7 @@ public class AutoPlaceOnPlane : MonoBehaviour
     void PlaceModel(ARPlane plane)
     {
         placed = true;
-        Instantiate(modelPrefab, plane.center, Quaternion.identity);
+        placedInstance = Instantiate(modelPrefab, plane.center, Quaternion.identity);
 
         if (!hidePlanesAfterPlacement)
         {
@@ -73,6 +86,30 @@ public class AutoPlaceOnPlane : MonoBehaviour
         {
             trackedPlane.gameObject.SetActive(false);
         }
-        planeManager.enabled = false;
+    }
+
+    public void ResetPlacement()
+    {
+        if (placedInstance != null)
+        {
+            Destroy(placedInstance);
+            placedInstance = null;
+        }
+
+        placed = false;
+
+        foreach (var trackedPlane in planeManager.trackables)
+        {
+            trackedPlane.gameObject.SetActive(true);
+        }
+
+        foreach (var trackedPlane in planeManager.trackables)
+        {
+            if (trackedPlane.alignment == PlaneAlignment.HorizontalUp)
+            {
+                PlaceModel(trackedPlane);
+                return;
+            }
+        }
     }
 }

@@ -12,6 +12,8 @@ public class AutoPlaceOnPlane : MonoBehaviour
     GameObject placedInstance;
     bool placed;
 
+    public GameObject PlacedInstance => placedInstance;
+
     void Awake()
     {
         planeManager = GetComponent<ARPlaneManager>();
@@ -86,6 +88,12 @@ public class AutoPlaceOnPlane : MonoBehaviour
         {
             trackedPlane.gameObject.SetActive(false);
         }
+    }
+
+    public void SetModelPrefab(GameObject prefab)
+    {
+        modelPrefab = prefab;
+        ResetPlacement();
     }
 
     public void ResetPlacement()

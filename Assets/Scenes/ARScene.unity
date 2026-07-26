@@ -1856,7 +1856,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d211f0d41b4c41d449053e0e281a1526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverUrl: http://192.168.4.1/data
+  serverUrl: http://172.20.10.6:8001/data
   pollInterval: 0.1
 --- !u!4 &1917589523
 Transform:
